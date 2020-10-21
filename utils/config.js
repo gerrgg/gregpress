@@ -5,11 +5,11 @@ require('dotenv').config()
 const PORT = process.env.PORT
 
 // the URI to our NO-SQL database
-const MONGODB_URI = process.env.MONGODB_URI
+let MONGODB_URI = process.env.MONGODB_URI
 
 // use a seperate database for testing
 if(process.env.NODE_ENV === "test"){
-  MONGODB_URI = process.MONGODB_TEST_URI
+  MONGODB_URI = process.env.MONGODB_TEST_URI
 }
 
 module.exports = {
