@@ -21,6 +21,7 @@ const logger = require("./utils/logger");
 
 // Routes
 const blogsRouter = require("./controllers/blogs");
+const usersRouter = require("./controllers/users");
 
 // Database object
 const mongoose = require("mongoose")
@@ -49,6 +50,7 @@ app.use(middleware.requestLogger);
 
 // Setup endpoints
 app.use('/api/blogs', blogsRouter)
+app.use("/api/users", usersRouter)
 
 // use the testing DATABASE for tests
 if (process.env.NODE_ENV === "test") {

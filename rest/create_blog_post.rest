@@ -1,0 +1,9 @@
+
+
+POST http://localhost:3003/api/blogs 
+Content-Type: application/json
+
+{
+  "title": "Some title",
+  "content": "<p>Just a paragraph tag for now</p>"
+}

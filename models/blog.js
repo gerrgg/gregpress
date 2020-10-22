@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const blogSchema = new mongoose.Schema({
-  title: { type: String, default: "(no-title)" },
-  content: { type: String, required: true },
-  date: { type: Date, default: Date.now },
+  title: { type: String, required: true},
+  content: { type: String, required: true},
+  date: { type: Date, default: Date.now() },
   likes: { type: Number, default: 0 },
 });
 
