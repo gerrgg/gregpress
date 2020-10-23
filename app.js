@@ -1,14 +1,14 @@
-// Configuration for database 
-const config = require('./utils/config')
+// Configuration for database
+const config = require("./utils/config");
 
 // Fast, unopinionated, minimalist web framework for Node.js
-const express = require('express')
+const express = require("express");
 
 // Adds a layer around async operations to catch errors and pass to error handler
 require("express-async-errors");
 
 // build an app with express
-const app = express()
+const app = express();
 
 // Allows cross-origin requests
 const cors = require("cors");
@@ -24,7 +24,11 @@ const blogsRouter = require("./controllers/blogs");
 const usersRouter = require("./controllers/users");
 
 // Database object
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+
+mongoose.set("useNewUrlParser", true);
+mongoose.set("useFindAndModify", false);
+mongoose.set("useCreateIndex", true);
 
 const connectToDb = async () => {
   try {
@@ -37,20 +41,20 @@ const connectToDb = async () => {
   } catch (e) {
     logger.error("error connecting to MongoDB:", e.message);
   }
-}
+};
 
 connectToDb();
 
-app.use(cors())
-app.use(express.static("build"))
-app.use(express.json())
+app.use(cors());
+app.use(express.static("build"));
+app.use(express.json());
 
 // logs requests
 app.use(middleware.requestLogger);
 
 // Setup endpoints
-app.use('/api/blogs', blogsRouter)
-app.use("/api/users", usersRouter)
+app.use("/api/blogs", blogsRouter);
+app.use("/api/users", usersRouter);
 
 // use the testing DATABASE for tests
 if (process.env.NODE_ENV === "test") {
@@ -58,9 +62,8 @@ if (process.env.NODE_ENV === "test") {
   app.use("/api/testing", testingRouter);
 }
 
-
 // Error handling
-app.use(middleware.unknownEndpoint)
-app.use(middleware.errorHandler)
+app.use(middleware.unknownEndpoint);
+app.use(middleware.errorHandler);
 
-module.exports = app
+module.exports = app;
