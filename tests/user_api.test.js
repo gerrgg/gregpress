@@ -14,6 +14,7 @@ beforeEach(async () => {
     email: "drstupidface@aol.com",
     name: "Jeremy Corbin",
     passwordHash: "password",
+    date: Date.now(),
   });
 
   await user.save();
