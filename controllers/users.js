@@ -1,4 +1,5 @@
 const usersRouter = require("express").Router();
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 // Mongoose schema model
@@ -35,10 +36,18 @@ usersRouter.delete("/:id", async (request, response, next) => {
   // get user id from url
   const userToDelete = await User.findById(request.params.id);
 
-  if (userToDelete) {
-    await User.findByIdAndRemove(userToDelete.id);
-    response.status(204).end();
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+
+  if (
+    userToDelete &&
+    decodedToken.id &&
+    userToDelete.id.toString() !== decodedToken.id.toString()
+  ) {
+    return response.status(401).json({ error: "token missing or invalid" });
   }
+
+  await User.findByIdAndRemove(userToDelete.id);
+  response.status(204).end();
 });
 
 usersRouter.put("/:id", async (request, response, next) => {

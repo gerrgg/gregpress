@@ -22,6 +22,7 @@ const logger = require("./utils/logger");
 // Routes
 const blogsRouter = require("./controllers/blogs");
 const usersRouter = require("./controllers/users");
+const loginRouter = require("./controllers/login");
 
 // Database object
 const mongoose = require("mongoose");
@@ -52,9 +53,13 @@ app.use(express.json());
 // logs requests
 app.use(middleware.requestLogger);
 
+// extract the token set in authorization headers
+app.use(middleware.tokenExtractor);
+
 // Setup endpoints
 app.use("/api/blogs", blogsRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/login", loginRouter);
 
 // use the testing DATABASE for tests
 if (process.env.NODE_ENV === "test") {

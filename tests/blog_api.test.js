@@ -33,10 +33,10 @@ describe("when there is initially some blogs saved", () => {
     };
 
     const response = await api
-      .post("/api/blogs").send(blog) // YOU HAVE TO SEND OBJECT
+      .post("/api/blogs")
+      .send(blog) // YOU HAVE TO SEND OBJECT
       .expect(201) // 201 created
       .expect("Content-Type", /application\/json/);
-
 
     expect(response.body.title).toBe(response.body.title);
   });
@@ -47,7 +47,8 @@ describe("when there is initially some blogs saved", () => {
     };
 
     const response = await api
-      .post("/api/blogs").send(blog) // YOU HAVE TO SEND OBJECT
+      .post("/api/blogs")
+      .send(blog) // YOU HAVE TO SEND OBJECT
       .expect(400) // 201 created
       .expect("Content-Type", /application\/json/);
   });

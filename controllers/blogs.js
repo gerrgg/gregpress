@@ -7,12 +7,12 @@ blogsRouter.get("/", async (request, response) => {
   // find them all
   const blogs = await Blog.find({});
 
-  //return in JSON
+  // return in JSON
   response.status(200).json(blogs);
 });
 
 blogsRouter.post("/", async (request, response) => {
-  const body = request.body;
+  const { body } = request;
 
   // build blog object from request
   const blog = new Blog({

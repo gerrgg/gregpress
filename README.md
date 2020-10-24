@@ -13,4 +13,12 @@ A post will have a category, include some text/image/code and may be divided int
 - Posts will have a single category
 - Posts will have one or more chapters
 
-## Post
+## Users
+
+Users will interact with the blog site and will be divided between admin/non-admins
+
+- Email (String)
+- Name (String)
+- Date (Date)
+- passwordHash (String)
+- admin (Bool)
