@@ -1,4 +1,5 @@
 const usersRouter = require("express").Router();
+const bcrypt = require("bcrypt");
 
 // Mongoose schema model
 const User = require("../models/user");
@@ -13,11 +14,14 @@ usersRouter.get("/", async (request, response) => {
 });
 
 usersRouter.post("/", async (request, response) => {
-  const body = response.body;
+  const body = request.body;
+
+  const passwordHash = await bcrypt.hash(body.password, 10);
 
   const user = new User({
     email: body.email,
     name: body.name,
+    passwordHash: passwordHash,
   });
 
   const savedUser = await user.save();

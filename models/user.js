@@ -2,9 +2,20 @@ const mongoose = require("mongoose");
 
 const uniqueValidator = require("mongoose-unique-validator");
 
+const validateEmail = (email) => {
+  const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  return regex.test(email);
+};
+
 const userSchema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true },
-  name: String,
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: [validateEmail, "Please fill a valid email address"],
+  },
+  passwordHash: { type: String, required: true },
+  name: { type: String, required: true },
 });
 
 userSchema.set("toJSON", {
