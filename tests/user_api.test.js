@@ -109,6 +109,32 @@ describe("when there is initially some users saved", () => {
     await api.post("/api/users").send(user3).expect(400);
     await api.post("/api/users").send(user4).expect(201);
   });
+
+  test("successfully deleteing a user return 204 no further content", async () => {
+    const usersBeforeDelete = await helper.getUsers();
+    await api.delete(`/api/users/${usersBeforeDelete[0].id}`).expect(204); // no further content
+    const usersAfterDelete = await helper.getUsers();
+    expect(usersAfterDelete.length).toBeLessThan(usersBeforeDelete.length);
+  });
+
+  test("successfully editing a user returns ", async () => {
+    // get a user
+    const usersBeforeDelete = await helper.getUsers();
+    const firstUser = usersBeforeDelete[0];
+
+    const newName = "some other name";
+
+    // copy first user object but change name
+    const updatedFirstUser = { ...firstUser, name: newName };
+
+    const response = await api
+      .put(`/api/users/${firstUser.id}`)
+      .send(updatedFirstUser)
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+
+    expect(response.body.name).toBe(newName);
+  });
 });
 
 afterAll(() => {

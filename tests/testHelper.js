@@ -1,12 +1,10 @@
 const supertest = require("supertest");
-const app = require("../app");
-const api = supertest(app);
 
 const Blog = require("../models/blog");
+const User = require("../models/user");
 
-const getBlogs = async () => {
-  const blogs = await Blog.find({});
-  return blogs;
-};
+const getBlogs = async () => await Blog.find({});
 
-module.exports = { getBlogs };
+const getUsers = async () => await User.find({});
+
+module.exports = { getBlogs, getUsers };

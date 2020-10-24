@@ -31,4 +31,30 @@ usersRouter.post("/", async (request, response) => {
   response.status(201).json(savedUser);
 });
 
+usersRouter.delete("/:id", async (request, response, next) => {
+  // get user id from url
+  const userToDelete = await User.findById(request.params.id);
+
+  if (userToDelete) {
+    await User.findByIdAndRemove(userToDelete.id);
+    response.status(204).end();
+  }
+});
+
+usersRouter.put("/:id", async (request, response, next) => {
+  const body = request.body;
+
+  const user = {
+    email: body.email,
+    name: body.name,
+    passwordHash: body.passwordHash,
+  };
+
+  const updatedUser = await User.findByIdAndUpdate(request.params.id, user, {
+    new: true,
+  });
+
+  response.status(200).json(updatedUser);
+});
+
 module.exports = usersRouter;
