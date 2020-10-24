@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
   },
   passwordHash: { type: String, required: true },
   name: { type: String, required: true },
+  date: { type: Date, required: true },
 });
 
 userSchema.set("toJSON", {
