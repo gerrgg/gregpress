@@ -24,6 +24,7 @@ usersRouter.post("/", async (request, response) => {
     name: body.name,
     passwordHash: passwordHash,
     date: Date.now(),
+    admin: body.admin ? body.admin : false,
   });
 
   const savedUser = await user.save();
@@ -36,27 +37,51 @@ usersRouter.delete("/:id", async (request, response, next) => {
   // get user id from url
   const userToDelete = await User.findById(request.params.id);
 
+  // decode token to get hidden properties
   const decodedToken = jwt.verify(request.token, process.env.SECRET);
 
+  // get the user making the delete to confirm they are a admin
+  const userAttemptingDelete = await User.findById(decodedToken.id);
+
+  //user must have authorization and not be deleting themselves
   if (
     userToDelete &&
     decodedToken.id &&
-    userToDelete.id.toString() !== decodedToken.id.toString()
+    userToDelete.id.toString() === decodedToken.id.toString()
   ) {
     return response.status(401).json({ error: "token missing or invalid" });
   }
 
+  // must be admin
+  if (!userAttemptingDelete.admin)
+    return response
+      .status(401)
+      .json({ error: "You do not have privledge to delete this user." });
+
+  // delete the scrub
   await User.findByIdAndRemove(userToDelete.id);
   response.status(204).end();
 });
 
 usersRouter.put("/:id", async (request, response, next) => {
-  const body = request.body;
+  const userToUpdate = await User.findById(request.params.id);
+
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+
+  // users can only edit themselves
+  if (
+    userToUpdate &&
+    decodedToken.id &&
+    userToUpdate.id.toString() !== decodedToken.id.toString()
+  ) {
+    return response.status(401).json({ error: "token missing or invalid" });
+  }
+
+  const { body } = request;
 
   const user = {
     email: body.email,
     name: body.name,
-    passwordHash: body.passwordHash,
   };
 
   const updatedUser = await User.findByIdAndUpdate(request.params.id, user, {

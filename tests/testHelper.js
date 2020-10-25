@@ -12,17 +12,11 @@ const getUsers = async () => await User.find({});
 const createUser = async (user) => await api.post("/api/users").send(user);
 
 const login = async (email, password) =>
-  api.post("/api/login").send({ email, password });
-
-const getAdmin = async () => await User.find({ admin: true }).exec();
-
-const getNonAdmin = async () => await User.find({ admin: false }).exec();
+  await api.post("/api/login").send({ email, password });
 
 module.exports = {
   getBlogs,
   getUsers,
-  getAdmin,
-  getNonAdmin,
   createUser,
   login,
 };

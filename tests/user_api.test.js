@@ -20,6 +20,7 @@ beforeEach(async () => {
     email: "drbignsexi@gmail.com",
     name: "Greg Bastianelli",
     password: "password",
+    admin: true,
   };
 
   await helper.createUser(user);
@@ -35,7 +36,9 @@ describe("when there is initially some users saved", () => {
 
     expect(response.body.length).toBeGreaterThan(0);
   });
+});
 
+describe("when creating users", () => {
   test("users with valid credentials are return 201 created and new user object", async () => {
     const user = {
       email: "greg@iamgreg.xyz",
@@ -115,8 +118,10 @@ describe("when there is initially some users saved", () => {
     await api.post("/api/users").send(user3).expect(400);
     await api.post("/api/users").send(user4).expect(201);
   });
+});
 
-  test("users can only be deleted by users with proper authorization", async () => {
+describe("when deleting users", () => {
+  test("users cannot delete themselves", async () => {
     const usersBeforeDelete = await helper.getUsers();
 
     // we need to login to delete stuff
@@ -127,18 +132,60 @@ describe("when there is initially some users saved", () => {
     await api
       .delete(`/api/users/${usersBeforeDelete[0].id}`)
       .set("Authorization", "Bearer " + token)
-      .expect(204); // no further content
+      .expect(401); // no further content
 
     const usersAfterDelete = await helper.getUsers();
 
-    expect(usersAfterDelete.length).toBeLessThan(usersBeforeDelete.length);
+    expect(usersAfterDelete.length).toBe(usersBeforeDelete.length);
   });
 
-  test("successfully editing a user returns 200 status OK", async () => {
+  test("users without admin role cannot delete other users", async () => {
+    const users = await helper.getUsers();
+
+    const user = users[0];
+    const admin = users[1];
+
+    const response = await helper.login(user.email, "password");
+
+    // non admin user token
+    const token = response.body.token;
+
+    await api
+      .delete(`/api/users/${admin.id}`) // delete the admin
+      .set("Authorization", "Bearer " + token) // with non admin token
+      .expect(401); // unathorized
+  });
+
+  test("users with admin role CAN delete other users", async () => {
+    const users = await helper.getUsers();
+
+    const user = users[0];
+    const admin = users[1];
+
+    const response = await helper.login(admin.email, "password");
+
+    // non admin user token
+    const token = response.body.token;
+
+    await api
+      .delete(`/api/users/${user.id}`) // delete the admin
+      .set("Authorization", "Bearer " + token) // with non admin token
+      .expect(204); // no further content
+  });
+});
+
+describe("when editing users", () => {
+  test("users can edit themselves", async () => {
     // get a user
     const usersBeforeDelete = await helper.getUsers();
     const firstUser = usersBeforeDelete[0];
 
+    const loginResponse = await helper.login(firstUser.email, "password");
+
+    // user token
+    const token = loginResponse.body.token;
+
+    // the edit
     const newName = "some other name";
 
     // copy first user object but change name
@@ -147,12 +194,49 @@ describe("when there is initially some users saved", () => {
     const response = await api
       .put(`/api/users/${firstUser.id}`)
       .send(updatedFirstUser)
+      .set("Authorization", "Bearer " + token) // with non admin token
       .expect(200)
       .expect("Content-Type", /application\/json/);
 
     expect(response.body.name).toBe(newName);
   });
 
+  test("users cannot edit themselves unless they've logged in", async () => {
+    // get a user
+    const usersBeforeDelete = await helper.getUsers();
+    const firstUser = usersBeforeDelete[0];
+
+    // the edit
+    const newName = "some other name";
+
+    // copy first user object but change name
+    const updatedFirstUser = { ...firstUser, name: newName };
+
+    await api
+      .put(`/api/users/${firstUser.id}`)
+      .send(updatedFirstUser)
+      .expect(401);
+  });
+
+  test("users cannot edit other users", async () => {
+    // get a user
+    const users = await helper.getUsers();
+
+    const loginResponse = await helper.login(users[1], "password");
+
+    // copy the second user but change the name to the first users name
+    const updatedUser2 = { ...users[1], name: users[0].name };
+
+    await api
+      .put(`/api/users/${users[1].id}`) // edit first user
+      .send(updatedUser2) // with updated name
+      .set("Authorization", "Bearer " + loginResponse.body.token) // use an unathorized token
+      .expect(401)
+      .expect("Content-Type", /application\/json/);
+  });
+});
+
+describe("when logging users in", () => {
   test("users can log in to the application with proper credentials", async () => {
     const usersBeforeDelete = await helper.getUsers();
     const firstUser = usersBeforeDelete[0];
