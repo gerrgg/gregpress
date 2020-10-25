@@ -4,18 +4,17 @@ const bcrypt = require("bcrypt");
 
 // Mongoose schema model
 const User = require("../models/user");
-const blog = require("../models/blog");
 
 usersRouter.get("/", async (request, response) => {
   // find them all
   const users = await User.find({});
 
-  //return in JSON
+  // return in JSON
   response.status(200).json(users);
 });
 
 usersRouter.post("/", async (request, response) => {
-  const body = request.body;
+  const { body } = request;
 
   const passwordHash = await bcrypt.hash(body.password, 10);
 
@@ -29,11 +28,11 @@ usersRouter.post("/", async (request, response) => {
 
   const savedUser = await user.save();
 
-  //return in JSON
+  // return in JSON
   response.status(201).json(savedUser);
 });
 
-usersRouter.delete("/:id", async (request, response, next) => {
+usersRouter.delete("/:id", async (request, response) => {
   // get user id from url
   const userToDelete = await User.findById(request.params.id);
 
@@ -43,7 +42,7 @@ usersRouter.delete("/:id", async (request, response, next) => {
   // get the user making the delete to confirm they are a admin
   const userAttemptingDelete = await User.findById(decodedToken.id);
 
-  //user must have authorization and not be deleting themselves
+  // user must have authorization and not be deleting themselves
   if (
     userToDelete &&
     decodedToken.id &&
@@ -63,7 +62,7 @@ usersRouter.delete("/:id", async (request, response, next) => {
   response.status(204).end();
 });
 
-usersRouter.put("/:id", async (request, response, next) => {
+usersRouter.put("/:id", async (request, response) => {
   const userToUpdate = await User.findById(request.params.id);
 
   const decodedToken = jwt.verify(request.token, process.env.SECRET);

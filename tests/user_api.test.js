@@ -1,7 +1,9 @@
+/* eslint-disable no-undef */
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const helper = require("./testHelper");
 const app = require("../app");
+
 const api = supertest(app);
 
 const User = require("../models/user");
@@ -49,7 +51,7 @@ describe("when creating users", () => {
     const response = await api
       .post("/api/users")
       .send(user)
-      .expect(201) //created
+      .expect(201) // created
       .expect("Content-Type", /application\/json/);
 
     expect(response.body.email).toBe(user.email);
@@ -64,7 +66,7 @@ describe("when creating users", () => {
     await api
       .post("/api/users")
       .send(user)
-      .expect(400) //created
+      .expect(400) // created
       .expect("Content-Type", /application\/json/);
   });
 
@@ -81,10 +83,10 @@ describe("when creating users", () => {
       password: "password",
     };
 
-    //create user 1
+    // create user 1
     await api.post("/api/users").send(user1).expect(201);
 
-    //create user 2
+    // create user 2
     await api.post("/api/users").send(user2).expect(400);
   });
 
@@ -127,11 +129,11 @@ describe("when deleting users", () => {
     // we need to login to delete stuff
     const response = await helper.login(usersBeforeDelete[0].email, "password");
 
-    const token = response.body.token;
+    const { token } = response.body;
 
     await api
       .delete(`/api/users/${usersBeforeDelete[0].id}`)
-      .set("Authorization", "Bearer " + token)
+      .set("Authorization", `Bearer ${token}`)
       .expect(401); // no further content
 
     const usersAfterDelete = await helper.getUsers();
@@ -148,11 +150,11 @@ describe("when deleting users", () => {
     const response = await helper.login(user.email, "password");
 
     // non admin user token
-    const token = response.body.token;
+    const { token } = response.body;
 
     await api
       .delete(`/api/users/${admin.id}`) // delete the admin
-      .set("Authorization", "Bearer " + token) // with non admin token
+      .set("Authorization", `Bearer ${token}`) // with non admin token
       .expect(401); // unathorized
   });
 
@@ -165,11 +167,11 @@ describe("when deleting users", () => {
     const response = await helper.login(admin.email, "password");
 
     // non admin user token
-    const token = response.body.token;
+    const { token } = response.body;
 
     await api
       .delete(`/api/users/${user.id}`) // delete the admin
-      .set("Authorization", "Bearer " + token) // with non admin token
+      .set("Authorization", `Bearer ${token}`) // with non admin token
       .expect(204); // no further content
   });
 });
@@ -183,18 +185,18 @@ describe("when editing users", () => {
     const loginResponse = await helper.login(firstUser.email, "password");
 
     // user token
-    const token = loginResponse.body.token;
+    const { token } = loginResponse.body;
 
     // the edit
     const newName = "some other name";
 
     // copy first user object but change name
-    const updatedFirstUser = { ...firstUser, name: newName };
+    const updatedFirstUser = { email: firstUser.email, name: newName };
 
     const response = await api
       .put(`/api/users/${firstUser.id}`)
       .send(updatedFirstUser)
-      .set("Authorization", "Bearer " + token) // with non admin token
+      .set("Authorization", `Bearer ${token}`) // with non admin token
       .expect(200)
       .expect("Content-Type", /application\/json/);
 
@@ -210,7 +212,7 @@ describe("when editing users", () => {
     const newName = "some other name";
 
     // copy first user object but change name
-    const updatedFirstUser = { ...firstUser, name: newName };
+    const updatedFirstUser = { email: firstUser.email, name: newName };
 
     await api
       .put(`/api/users/${firstUser.id}`)
@@ -225,12 +227,12 @@ describe("when editing users", () => {
     const loginResponse = await helper.login(users[1], "password");
 
     // copy the second user but change the name to the first users name
-    const updatedUser2 = { ...users[1], name: users[0].name };
+    const updatedUser2 = { email: users[1].email, name: users[0].name };
 
     await api
       .put(`/api/users/${users[1].id}`) // edit first user
       .send(updatedUser2) // with updated name
-      .set("Authorization", "Bearer " + loginResponse.body.token) // use an unathorized token
+      .set("Authorization", `Bearer ${loginResponse.body.token}`) // use an unathorized token
       .expect(401)
       .expect("Content-Type", /application\/json/);
   });
