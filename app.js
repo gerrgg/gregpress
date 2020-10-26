@@ -20,6 +20,7 @@ const middleware = require("./utils/middleware");
 const logger = require("./utils/logger");
 
 // Routes
+const resetPasswordRouter = require("./controllers/resetPassword");
 const blogsRouter = require("./controllers/blogs");
 const usersRouter = require("./controllers/users");
 const loginRouter = require("./controllers/login");
@@ -60,6 +61,7 @@ app.use(middleware.tokenExtractor);
 app.use("/api/blogs", blogsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/login", loginRouter);
+app.use("/api/reset-password", resetPasswordRouter);
 
 // use the testing DATABASE for tests
 if (process.env.NODE_ENV === "test") {

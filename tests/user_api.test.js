@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const helper = require("./testHelper");

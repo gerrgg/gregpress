@@ -10,6 +10,11 @@ const getBlogs = async () => Blog.find({});
 
 const getUsers = async () => User.find({});
 
+const getUser = async () => {
+  const users = await User.find({});
+  return users[0];
+};
+
 const createUser = async (user) => api.post("/api/users").send(user);
 
 const login = async (email, password) =>
@@ -18,6 +23,7 @@ const login = async (email, password) =>
 module.exports = {
   getBlogs,
   getUsers,
+  getUser,
   createUser,
   login,
 };

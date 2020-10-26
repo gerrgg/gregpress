@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
     validate: [validateEmail, "Please fill a valid email address"],
   },
   passwordHash: { type: String, required: true },
+  passwordResetHash: { type: String, default: "" },
   name: { type: String, required: true },
   date: { type: Date, required: true },
   admin: { type: Boolean, default: false },

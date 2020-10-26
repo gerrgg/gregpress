@@ -33,7 +33,9 @@ Users will interact with the blog site and will be divided between admin/non-adm
 
 - Reset password endpoints (POST /api/lost-password, {email: some@email.com}))
 - User passes email to controller
-- Controller finds that user, creates a token and saves to that user's resetToken
+- Controller finds that user, creates a token, hashes that and saves to the hash user's resetToken property
 - Expire resetToken in (30 or 60) minutes
-- Send link to email with user email and token in link
-- user clicks link and is presented with a new form for submitting a new password (GET /api/lost-password/ {email: some@email.com, token: 'askoemaokmse' }
+- Send link to email with user email and the token (not the hash) in link
+- user visits link with email and token as parameters
+- controller verifys the token by comparing it to the hash
+- if the comparison passes then present form for user to edit password

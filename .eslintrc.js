@@ -1,6 +1,6 @@
 module.exports = {
   extends: ["airbnb", "prettier", "plugin:node/recommended"],
-  plugins: ["prettier"],
+  plugins: ["prettier", "jest"],
   rules: {
     "prettier/prettier": "error",
     "no-unused-vars": "warn",
