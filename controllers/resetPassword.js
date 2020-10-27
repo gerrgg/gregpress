@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const helper = require("../utils/helper");
 const resetPasswordRouter = require("express").Router();
+const mailer = require("../utils/mailer");
 const User = require("../models/user");
 
 resetPasswordRouter.post("/", async (request, response) => {
@@ -27,6 +28,8 @@ resetPasswordRouter.post("/", async (request, response) => {
   const updatedUser = await User.findByIdAndUpdate(user.id, update, {
     new: true,
   });
+
+  mailer.sendPasswordResetEmail(body.email, token);
 
   // setup timer to reset password hash in 30 minutes
   setTimeout(async () => {
