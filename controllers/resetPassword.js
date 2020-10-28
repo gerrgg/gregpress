@@ -17,11 +17,11 @@ resetPasswordRouter.post("/", async (request, response) => {
   }
 
   // if user generate a token
-  const token = helper.generateToken();
+  const resetToken = helper.generateToken();
 
   // create a new user object with the resetPasswordHash defined
   const update = {
-    passwordResetHash: await bcrypt.hash(token, 10),
+    resetToken,
   };
 
   // update user model with the password hash
@@ -29,18 +29,45 @@ resetPasswordRouter.post("/", async (request, response) => {
     new: true,
   });
 
-  mailer.sendPasswordResetEmail(body.email, token);
+  mailer.sendPasswordResetEmail(body.email, resetToken);
 
   // setup timer to reset password hash in 30 minutes
   setTimeout(async () => {
-    await User.findByIdAndUpdate(
-      user.id,
-      { passwordResetHash: "" },
-      { new: true }
-    );
+    await User.findByIdAndUpdate(user.id, { resetToken: "" }, { new: true });
   }, 30000); // half hour
 
   // return the updated user with the hash set
+  response.status(200).json(updatedUser);
+});
+
+resetPasswordRouter.post("/:email/:token", async (request, response) => {
+  // get email from request
+  const { params } = request;
+  const { body } = request;
+
+  // get the user with matching email
+  const user = await User.findOne({ email: params.email });
+
+  // if no token, user or the token doesnt match the users return error
+  if (!(user && params.token && params.token !== user.resetToken)) {
+    return response.status(400).json({ error: "Request expired" });
+  }
+
+  // if no password - return error
+  if (!body.password)
+    return response.status(400).json({ error: "Please enter a new password" });
+
+  // hash the new password and unset the resetToken
+  const update = {
+    passwordHash: await bcrypt.hash(body.password, 10),
+    resetToken: "",
+  };
+
+  // update the user
+  const updatedUser = await User.findByIdAndUpdate(user.id, update, {
+    new: true,
+  });
+
   response.status(200).json(updatedUser);
 });
 

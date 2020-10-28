@@ -12,7 +12,7 @@ const mailer = nodemailer.createTransport({
 
 const sendPasswordResetEmail = (email, token) => {
   const sitename = config.SITENAME;
-  const resetPasswordLink = `${sitename}/api/reset-password/verify?email=${email}&token=${token}`;
+  const resetPasswordLink = `${sitename}/api/reset-password/${email}/${token}`;
 
   mailer.sendMail(
     {

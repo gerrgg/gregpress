@@ -19,13 +19,13 @@ beforeEach(async () => {
   await helper.createUser(user);
 });
 
-describe("When resetting a users password", () => {
-  jest.useFakeTimers();
+jest.useFakeTimers();
 
+describe("When resetting a users password", () => {
   test("if a valid user requests a password change, they should be assigned a hash", async () => {
     const userBefore = await helper.getUser();
 
-    expect(userBefore.passwordResetHash).toBe("");
+    expect(userBefore.resetToken).toBe("");
 
     await api
       .post("/api/reset-password")
@@ -34,7 +34,7 @@ describe("When resetting a users password", () => {
 
     const userAfter = await helper.getUser();
 
-    expect(userAfter.passwordResetHash).not.toBeNull();
+    expect(userAfter.resetToken).not.toBeNull();
   });
 
   test("if the email is invalid - should return 400 bad request", async () => {
@@ -48,7 +48,7 @@ describe("When resetting a users password", () => {
     const userBefore = await helper.getUser();
     const OneHour = 60000;
 
-    expect(userBefore.passwordResetHash).toBe("");
+    expect(userBefore.resetToken).toBe("");
 
     await api
       .post("/api/reset-password")
@@ -57,13 +57,43 @@ describe("When resetting a users password", () => {
 
     const userAfter = await helper.getUser();
 
-    expect(userAfter.passwordResetHash).not.toBeNull();
+    expect(userAfter.resetToken).not.toBeNull();
 
     jest.advanceTimersByTime(OneHour);
 
     const userAfterExpiration = await helper.getUser();
 
-    expect(userAfterExpiration.passwordResetHash).toBe("");
+    expect(userAfterExpiration.resetToken).toBe("");
+  });
+
+  test("users with matching email and token can reset password", async () => {
+    const userBefore = await helper.getUser();
+
+    await api
+      .post("/api/reset-password")
+      .send({ email: userBefore.email })
+      .expect(200);
+
+    const userAfter = await helper.getUser();
+
+    expect(userAfter.resetToken).not.toBeNull();
+
+    await api
+      .post(`/api/reset-password/${userAfter.email}/${userAfter.token}`)
+      .send({ password: "password2" })
+      .expect(200);
+
+    await api
+      .post("/api/login")
+      .send({ email: userAfter.email, password: "password2" })
+      .expect(200);
+
+    const userAfterResetingPassword = await helper.getUser();
+
+    expect(userAfterResetingPassword.resetToken).toBe("");
+    expect(userAfterResetingPassword.passwordHash).not.toBe(
+      userBefore.passwordHash
+    );
   });
 });
 
