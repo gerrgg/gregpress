@@ -21,6 +21,7 @@ Users will interact with the blog site and will be divided between admin/non-adm
 - Name (String)
 - Date (Date)
 - passwordHash (String)
+- resetToken (String)
 - admin (Bool)
 
 ### profilePicture

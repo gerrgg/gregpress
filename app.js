@@ -7,6 +7,9 @@ const express = require("express");
 // Adds a layer around async operations to catch errors and pass to error handler
 require("express-async-errors");
 
+// file uploads
+const fileUpload = require("express-fileupload");
+
 // build an app with express
 const app = express();
 
@@ -24,6 +27,7 @@ const resetPasswordRouter = require("./controllers/resetPassword");
 const blogsRouter = require("./controllers/blogs");
 const usersRouter = require("./controllers/users");
 const loginRouter = require("./controllers/login");
+const uploadsRouter = require("./controllers/uploads");
 
 // Database object
 const mongoose = require("mongoose");
@@ -48,6 +52,7 @@ const connectToDb = async () => {
 connectToDb();
 
 app.use(cors());
+app.use(fileUpload());
 app.use(express.static("build"));
 app.use(express.json());
 
@@ -62,6 +67,7 @@ app.use("/api/blogs", blogsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/login", loginRouter);
 app.use("/api/reset-password", resetPasswordRouter);
+app.use("/api/upload", uploadsRouter);
 
 // use the testing DATABASE for tests
 if (process.env.NODE_ENV === "test") {

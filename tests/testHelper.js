@@ -20,10 +20,18 @@ const createUser = async (user) => api.post("/api/users").send(user);
 const login = async (email, password) =>
   api.post("/api/login").send({ email, password });
 
+const getUploadedFilesPath = () => {
+  const today = new Date();
+  const siteURL = process.cwd();
+
+  return `${siteURL}/uploads/${today.getFullYear()}/${today.getMonth()}`;
+};
+
 module.exports = {
   getBlogs,
   getUsers,
   getUser,
   createUser,
   login,
+  getUploadedFilesPath,
 };

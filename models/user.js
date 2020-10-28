@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   passwordHash: { type: String, required: true },
   resetToken: { type: String, default: "" },
   name: { type: String, required: true },
-  date: { type: Date, required: true },
+  date: { type: Date, default: Date.now() },
   admin: { type: Boolean, default: false },
 });
 

@@ -22,7 +22,6 @@ usersRouter.post("/", async (request, response) => {
     email: body.email,
     name: body.name,
     passwordHash: passwordHash,
-    date: Date.now(),
     admin: body.admin ? body.admin : false,
   });
 
