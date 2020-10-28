@@ -4,6 +4,15 @@ const generateToken = () => {
   return rand() + rand();
 };
 
+const resetTokenIsValid = (user, token) =>
+  !(
+    user &&
+    token &&
+    token !== user.resetToken &&
+    user.resetTokenExpiration < Date.now()
+  );
+
 module.exports = {
   generateToken,
+  resetTokenIsValid,
 };

@@ -29,12 +29,18 @@ resetPasswordRouter.post("/", async (request, response) => {
     new: true,
   });
 
-  mailer.sendPasswordResetEmail(body.email, resetToken);
+  // send the mail
+  await mailer.sendPasswordResetEmail(body.email, resetToken);
 
-  // setup timer to reset password hash in 30 minutes
   setTimeout(async () => {
-    await User.findByIdAndUpdate(user.id, { resetToken: "" }, { new: true });
-  }, 30000); // half hour
+    await User.findByIdAndUpdate(
+      user.id,
+      { resetToken: "" },
+      {
+        new: true,
+      }
+    );
+  });
 
   // return the updated user with the hash set
   response.status(200).json(updatedUser);
@@ -43,14 +49,16 @@ resetPasswordRouter.post("/", async (request, response) => {
 resetPasswordRouter.post("/:email/:token", async (request, response) => {
   // get email from request
   const { params } = request;
+
+  // the the posted password
   const { body } = request;
 
   // get the user with matching email
   const user = await User.findOne({ email: params.email });
 
   // if no token, user or the token doesnt match the users return error
-  if (!(user && params.token && params.token !== user.resetToken)) {
-    return response.status(400).json({ error: "Request expired" });
+  if (!helper.resetTokenIsValid(user, params.token)) {
+    return response.status(400).json({ error: "Link is invalid or expired" });
   }
 
   // if no password - return error

@@ -44,7 +44,7 @@ describe("When resetting a users password", () => {
       .expect(400);
   });
 
-  test("password reset should expire in 30 minutes", async () => {
+  test("password resets expire in 30 minutes", async () => {
     const userBefore = await helper.getUser();
     const OneHour = 60000;
 
@@ -61,9 +61,9 @@ describe("When resetting a users password", () => {
 
     jest.advanceTimersByTime(OneHour);
 
-    const userAfterExpiration = await helper.getUser();
+    const userAfterExpire = await helper.getUser();
 
-    expect(userAfterExpiration.resetToken).toBe("");
+    expect(userAfterExpire.resetToken).toBe("");
   });
 
   test("users with matching email and token can reset password", async () => {

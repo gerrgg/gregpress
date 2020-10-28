@@ -10,28 +10,20 @@ const mailer = nodemailer.createTransport({
   },
 });
 
-const sendPasswordResetEmail = (email, token) => {
+const sendPasswordResetEmail = async (email, token) => {
   const sitename = config.SITENAME;
   const resetPasswordLink = `${sitename}/api/reset-password/${email}/${token}`;
 
-  mailer.sendMail(
-    {
-      to: email,
-      from: config.FROM_EMAIL,
-      subject: `Password Reset | ${sitename}`,
-      html: `<h1>Password Reset</h1>
+  const info = await mailer.sendMail({
+    to: email,
+    from: config.FROM_EMAIL,
+    subject: `Password Reset | ${sitename}`,
+    html: `<h1>Password Reset</h1>
            <p>Hello, you\'ve requested a password reset.</p>
            <p><a href="${resetPasswordLink}">Click here to reset your password</a>, if you did not make this request please disregard the email.</p>`,
-    },
-    (error, info) => {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Message sent: " + info.message);
-        transport.close();
-      }
-    }
-  );
+  });
+
+  return info;
 };
 
 module.exports = {
