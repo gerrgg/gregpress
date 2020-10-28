@@ -237,32 +237,6 @@ describe("when editing users", () => {
   });
 });
 
-describe("when logging users in", () => {
-  test("users can log in to the application with proper credentials", async () => {
-    const usersBeforeDelete = await helper.getUsers();
-    const firstUser = usersBeforeDelete[0];
-
-    const credentials = {
-      email: firstUser.email,
-      password: "password",
-    };
-
-    const response = await api.post("/api/login").send(credentials).expect(200);
-
-    expect(response.body.email).toBe(firstUser.email);
-    expect(response.body.token).not.toBeNull();
-  });
-
-  test("logging in with invalid credentials returns 401 unauthorized", async () => {
-    const credentials = {
-      email: "somestudpidemail@dum.dm",
-      password: "123123123",
-    };
-
-    await api.post("/api/login").send(credentials).expect(401);
-  });
-});
-
 afterAll(() => {
   mongoose.connection.close();
 });
