@@ -1,9 +1,10 @@
 POST http://localhost:3003/api/upload
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdyZWdAZ2VycmcueHl6IiwiaWQiOiI1Zjk5ODkwMTlhYzg0MTQxNzhmZGVmN2QiLCJpYXQiOjE2MDM5ODI1MjB9.-CNh9Mnoy4wOUe6Ij2Gf1PpbCoinwIpjS9EQHI0W2Oc
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="image"; filename="1.png"
-Content-Type: image/png
+Content-Disposition: form-data; name="image"; filename="sometext.txt"
+Content-Type: text/plain
 
-< ./1.png
+< ../tests/sometext.txt
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--

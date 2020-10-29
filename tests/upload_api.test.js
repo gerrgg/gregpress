@@ -22,29 +22,32 @@ beforeEach(async () => {
 });
 
 describe("when uploading images", () => {
-  test("uploading images requires authorization", async () => {
-    fs.readFileSync(
-      `${process.cwd()}/tests/sometext.txt`,
-      async (error, data) => {
-        await api.post(`/api/upload`).attach("img", data).expect(400);
-      }
-    );
+  test("Should return bad request when we dont attach any files", async () => {
+    await api.post(`/api/upload`).expect(400);
   });
 
-  test("logged in users can upload images", async () => {
-    const user = await helper.getUser();
-    const loggedInUser = await helper.login(user.email, "password");
+  test("should return 401 if we try to upload without authorization", async () => {
+    const buffer = Buffer.from("some data");
 
-    fs.readFileSync(
-      `${process.cwd()}/tests/sometext.txt`,
-      async (error, data) => {
-        await api
-          .post(`/api/upload`)
-          .set("Authorization", `Bearer ${loggedInUser.body.token}`)
-          .attach("img", data)
-          .expect(200);
-      }
-    );
+    await api
+      .post(`/api/upload`)
+      .attach("img", buffer, "somefilename.txt")
+      .expect(401);
+  });
+
+  test("should return 200 if we upload a file and have authorization", async () => {
+    const user = await helper.getUser();
+    const response = await helper.login(user.email, "password");
+
+    const { token } = response.body;
+
+    const buffer = Buffer.from("some data");
+
+    await api
+      .post(`/api/upload`)
+      .set("Authorization", `bearer ${token}`)
+      .attach("img", buffer, "filename.txt")
+      .expect(200);
   });
 });
 

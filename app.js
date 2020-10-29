@@ -52,7 +52,14 @@ const connectToDb = async () => {
 connectToDb();
 
 app.use(cors());
-app.use(fileUpload());
+
+app.use(
+  fileUpload({
+    createParentPath: true,
+    // debug: true,
+  })
+);
+
 app.use(express.static("build"));
 app.use(express.json());
 
