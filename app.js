@@ -74,7 +74,7 @@ app.use("/api/blogs", blogsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/login", loginRouter);
 app.use("/api/reset-password", resetPasswordRouter);
-app.use("/api/upload", uploadsRouter);
+app.use("/api/uploads", uploadsRouter);
 
 // use the testing DATABASE for tests
 if (process.env.NODE_ENV === "test") {

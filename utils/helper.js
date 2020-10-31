@@ -63,36 +63,24 @@ const validateFileName = (name) => {
   return path;
 };
 
-const uploadFiles = async (files) => {
-  // keep track of what was uploaded
-  let uploadedFiles = [];
+const uploadFile = async (file, user) => {
+  // get path for easy passing
+  const path = validateFileName(file.name);
 
-  // upload each file passed
-  Object.keys(files).forEach(async (key) => {
-    // get the file from the array
-    const file = files[key];
-
-    // get path for easy passing
-    const path = validateFileName(file.name);
-
-    const upload = new Upload({
-      fileName: path.split("/").pop(),
-      fullPath: path,
-      type: file.mimetype,
-    });
-
-    // save to db
-    await upload.save();
-
-    // move to where it goes
-    file.mv(upload.fullPath, (error) => {
-      if (error) console.log(error);
-      // keep track of what was uploaded
-      uploadedFiles.push(upload);
-    });
+  const upload = new Upload({
+    fileName: path.split("/").pop(),
+    fullPath: path,
+    type: file.mimetype,
+    user: user._id,
   });
 
-  return uploadedFiles;
+  // save to db
+  await upload.save();
+
+  // move to where it goes
+  await file.mv(upload.fullPath);
+
+  return upload;
 };
 
 module.exports = {
@@ -101,5 +89,5 @@ module.exports = {
   getBaseUploadPath,
   unsetResetToken,
   validateFileName,
-  uploadFiles,
+  uploadFile,
 };

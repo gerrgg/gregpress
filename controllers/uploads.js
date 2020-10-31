@@ -1,10 +1,17 @@
 const uploadsRouter = require("express").Router();
 const helper = require("../utils/helper");
 const jwt = require("jsonwebtoken");
-const fs = require("fs");
 
 const User = require("../models/user");
 const Upload = require("../models/upload");
+
+uploadsRouter.get("/", async (request, response) => {
+  // find them all
+  const uploads = await Upload.find({});
+
+  // return in JSON
+  response.status(200).json(uploads);
+});
 
 uploadsRouter.post("/", async (request, response) => {
   const { files } = request;
@@ -25,7 +32,10 @@ uploadsRouter.post("/", async (request, response) => {
     return response.status(401).json({ error: "token missing or invalid" });
   }
 
-  const uploadedFiles = await helper.uploadFiles(files);
+  const uploadedFiles = Object.keys(files).map(async (key) => {
+    const lala = await helper.uploadFile(files[key], user);
+    console.log(lala);
+  });
 
   return response.status(201).json(uploadedFiles);
 });

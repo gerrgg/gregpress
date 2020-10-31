@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 const uploadSchema = new mongoose.Schema({
   fileName: { type: String, required: true },
   fullPath: { type: String, required: true },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   date: { type: Date, default: Date.now() },
   type: { type: String, default: "" },
   alt: String,

@@ -23,14 +23,14 @@ beforeEach(async () => {
 
 describe("when uploading images", () => {
   test("Should return bad request when we dont attach any files", async () => {
-    await api.post(`/api/upload`).expect(400);
+    await api.post(`/api/uploads`).expect(400);
   });
 
   test("should return 401 if we try to upload without authorization", async () => {
     const buffer = Buffer.from("some data");
 
     await api
-      .post(`/api/upload`)
+      .post(`/api/uploads`)
       .attach("img", buffer, "somefilename.txt")
       .expect(401);
   });
@@ -44,7 +44,7 @@ describe("when uploading images", () => {
     const buffer = Buffer.from("some data");
 
     await api
-      .post(`/api/upload`)
+      .post(`/api/uploads`)
       .set("Authorization", `bearer ${token}`)
       .attach("img", buffer, "filename.txt")
       .expect(201);
@@ -59,7 +59,7 @@ describe("when uploading images", () => {
     const buffer = Buffer.from("some data");
 
     await api
-      .post(`/api/upload`)
+      .post(`/api/uploads`)
       .set("Authorization", `bearer ${token}`)
       .attach("img", buffer, "filename.txt")
       .expect(201);
