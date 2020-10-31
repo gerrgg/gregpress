@@ -47,7 +47,22 @@ describe("when uploading images", () => {
       .post(`/api/upload`)
       .set("Authorization", `bearer ${token}`)
       .attach("img", buffer, "filename.txt")
-      .expect(200);
+      .expect(201);
+  });
+
+  test("duplicate file paths should be appended with new name", async () => {
+    const user = await helper.getUser();
+    const response = await helper.login(user.email, "password");
+
+    const { token } = response.body;
+
+    const buffer = Buffer.from("some data");
+
+    await api
+      .post(`/api/upload`)
+      .set("Authorization", `bearer ${token}`)
+      .attach("img", buffer, "filename.txt")
+      .expect(201);
   });
 });
 

@@ -1,8 +1,10 @@
 const uploadsRouter = require("express").Router();
 const helper = require("../utils/helper");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
 
 const User = require("../models/user");
+const Upload = require("../models/upload");
 
 uploadsRouter.post("/", async (request, response) => {
   const { files } = request;
@@ -23,20 +25,9 @@ uploadsRouter.post("/", async (request, response) => {
     return response.status(401).json({ error: "token missing or invalid" });
   }
 
-  // generate uploads folder path based on year and month
-  const basePath = helper.getBaseUploadPath();
+  const uploadedFiles = await helper.uploadFiles(files);
 
-  // upload each file passed
-  Object.keys(files).forEach((key) => {
-    // get the file from the object
-    const file = files[key];
-
-    // move it into place
-    file.mv(`${basePath}/${file.name}`, (error) => {
-      if (error) return response.status(500).send(error);
-      response.status(200).send("file uploaded");
-    });
-  });
+  return response.status(201).json(uploadedFiles);
 });
 
 module.exports = uploadsRouter;

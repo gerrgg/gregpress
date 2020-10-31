@@ -32,6 +32,7 @@ resetPasswordRouter.post("/", async (request, response) => {
   // send the mail
   await mailer.sendPasswordResetEmail(body.email, resetToken);
 
+  // unset the token
   await helper.unsetResetToken(user.id);
 
   // return the updated user with the hash set

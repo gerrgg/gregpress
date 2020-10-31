@@ -24,19 +24,19 @@ Users will interact with the blog site and will be divided between admin/non-adm
 - resetToken (String)
 - admin (Bool)
 
-### profilePicture
+## Uploads
 
-- Allow users to upload pictures. https://www.npmjs.com/package/express-fileupload
-- Uploaded images will be split into differant sizes.
-- Users can set profile picture
+Uploads are the files (usually images) uploaded to the site and used in blogs.
 
-### resetToken
-
-- Reset password endpoints (POST /api/lost-password, {email: some@email.com}))
-- User passes email to controller
-- Controller finds that user, creates a token, hashes that and saves to the hash user's resetToken property
-- Expire resetToken in (30 or 60) minutes
-- Send link to email with user email and the token (not the hash) in link
-- user visits link with email and token as parameters
-- controller verifys the token by comparing it to the hash
-- if the comparison passes then present form for user to edit password
+- Filename (String, Unique)
+- Date (Date)
+- Type (String)
+- User (Model)
+- Alt (String)
+- Caption
+- Sizes
+  - Full,
+  - Large,
+  - Medium,
+  - Small,
+  - Thumb
