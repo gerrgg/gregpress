@@ -50,7 +50,7 @@ describe("when uploading images", () => {
       .expect(201);
   });
 
-  test("duplicate file paths should be appended with new name", async () => {
+  test("can handle multiple uploads at once and duplicate filepaths", async () => {
     const user = await helper.getUser();
     const response = await helper.login(user.email, "password");
 
@@ -58,11 +58,17 @@ describe("when uploading images", () => {
 
     const buffer = Buffer.from("some data");
 
-    await api
+    const uploadResponse = await api
       .post(`/api/uploads`)
       .set("Authorization", `bearer ${token}`)
       .attach("img", buffer, "filename.txt")
+      .attach("img2", buffer, "filename.txt")
       .expect(201);
+
+    expect(uploadResponse.body.length).toBe(2);
+    expect(uploadResponse.body[0].fileName).not.toBe(
+      uploadResponse.body[1].fileName
+    );
   });
 });
 

@@ -8,3 +8,10 @@ Content-Type: text/plain
 
 < ../tests/sometext.txt
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="image"; filename="sometext.txt"
+Content-Type: text/plain
+
+< ../tests/sometext.txt
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

@@ -32,10 +32,13 @@ uploadsRouter.post("/", async (request, response) => {
     return response.status(401).json({ error: "token missing or invalid" });
   }
 
-  const uploadedFiles = Object.keys(files).map(async (key) => {
-    const lala = await helper.uploadFile(files[key], user);
-    console.log(lala);
-  });
+  // put all our promises in one basket
+  const promiseArray = Object.keys(files).map((key) =>
+    helper.uploadFile(files[key], user)
+  );
+
+  // then do em all at once
+  const uploadedFiles = await Promise.all(promiseArray);
 
   return response.status(201).json(uploadedFiles);
 });

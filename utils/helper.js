@@ -49,7 +49,7 @@ const validateFileName = (name) => {
   let fileName = name.split(".");
 
   // incrementor
-  let i = 1;
+  let i = 0;
 
   // if path is taken, increment filename until its not.
   if (fs.existsSync(path)) {
@@ -74,11 +74,11 @@ const uploadFile = async (file, user) => {
     user: user._id,
   });
 
-  // save to db
-  await upload.save();
-
   // move to where it goes
   await file.mv(upload.fullPath);
+
+  // save to db
+  await upload.save();
 
   return upload;
 };
