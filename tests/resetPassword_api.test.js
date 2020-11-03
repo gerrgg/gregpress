@@ -25,7 +25,7 @@ describe("When resetting a users password", () => {
   test("if a valid user requests a password change, they should be assigned a hash", async () => {
     const userBefore = await helper.getUser();
 
-    expect(userBefore.resetToken).toBe("");
+    expect(userBefore.resetHash).toBe("");
 
     await api
       .post("/api/reset-password")
@@ -34,7 +34,7 @@ describe("When resetting a users password", () => {
 
     const userAfter = await helper.getUser();
 
-    expect(userAfter.resetToken).not.toBeNull();
+    expect(userAfter.resetHash).not.toBeNull();
   });
 
   test("if the email is invalid - should return 400 bad request", async () => {
@@ -48,7 +48,7 @@ describe("When resetting a users password", () => {
     const userBefore = await helper.getUser();
     const OneHour = 60000;
 
-    expect(userBefore.resetToken).toBe("");
+    expect(userBefore.resetHash).toBe("");
 
     await api
       .post("/api/reset-password")
@@ -57,13 +57,13 @@ describe("When resetting a users password", () => {
 
     const userAfter = await helper.getUser();
 
-    expect(userAfter.resetToken).not.toBeNull();
+    expect(userAfter.resetHash).not.toBeNull();
 
     jest.advanceTimersByTime(OneHour);
 
     const userAfterExpire = await helper.getUser();
 
-    expect(userAfterExpire.resetToken).toBe("");
+    expect(userAfterExpire.resetHash).toBe("");
   });
 
   test("users with matching email and token can reset password", async () => {
@@ -76,7 +76,7 @@ describe("When resetting a users password", () => {
 
     const userAfter = await helper.getUser();
 
-    expect(userAfter.resetToken).not.toBeNull();
+    expect(userAfter.resetHash).not.toBeNull();
 
     await api
       .post(`/api/reset-password/${userAfter.email}/${userAfter.token}`)
@@ -90,7 +90,7 @@ describe("When resetting a users password", () => {
 
     const userAfterResetingPassword = await helper.getUser();
 
-    expect(userAfterResetingPassword.resetToken).toBe("");
+    expect(userAfterResetingPassword.resetHash).toBe("");
     expect(userAfterResetingPassword.passwordHash).not.toBe(
       userBefore.passwordHash
     );

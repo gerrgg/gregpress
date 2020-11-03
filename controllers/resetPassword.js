@@ -19,9 +19,12 @@ resetPasswordRouter.post("/", async (request, response) => {
   // if user generate a token
   const resetToken = helper.generateToken();
 
-  // create a new user object with the resetPasswordHash defined
+  // Hash the token
+  const resetHash = await bcrypt.hash(resetToken, 10);
+
+  // create a new user object with the resetHash defined
   const update = {
-    resetToken,
+    resetHash,
   };
 
   // update user model with the password hash
@@ -33,7 +36,7 @@ resetPasswordRouter.post("/", async (request, response) => {
   await mailer.sendPasswordResetEmail(body.email, resetToken);
 
   // unset the token
-  await helper.unsetResetToken(user.id);
+  await helper.unsetResetHash(user.id);
 
   // return the updated user with the hash set
   response.status(200).json(updatedUser);
@@ -43,25 +46,24 @@ resetPasswordRouter.post("/:email/:token", async (request, response) => {
   // get email from request
   const { params } = request;
 
-  // the the posted password
-  const { body } = request;
+  const password = request.body.password;
 
   // get the user with matching email
   const user = await User.findOne({ email: params.email });
 
   // if no token, user or the token doesnt match the users return error
-  if (!helper.resetTokenIsValid(user, params.token)) {
+  if (!(await helper.resetTokenIsValid(user, params.token))) {
     return response.status(400).json({ error: "Link is invalid or expired" });
   }
 
   // if no password - return error
-  if (!body.password)
+  if (!password)
     return response.status(400).json({ error: "Please enter a new password" });
 
   // hash the new password and unset the resetToken
   const update = {
-    passwordHash: await bcrypt.hash(body.password, 10),
-    resetToken: "",
+    passwordHash: await bcrypt.hash(password, 10),
+    resetHash: "",
   };
 
   // update the user

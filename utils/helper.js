@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const Upload = require("../models/upload");
 
@@ -9,12 +10,12 @@ const generateToken = () => {
   return rand() + rand();
 };
 
-const resetTokenIsValid = (user, token) =>
+const resetTokenIsValid = async (user, token) =>
   !(
     user &&
     token &&
-    token !== user.resetToken &&
-    user.resetTokenExpiration < Date.now()
+    user.resetHash !== "" &&
+    (await bcrypt.compare(token, user.resetHash))
   );
 
 const getBaseUploadPath = () => {
@@ -26,11 +27,11 @@ const getBaseUploadPath = () => {
   return path.join(dir, "uploads", year, month);
 };
 
-const unsetResetToken = async (id) => {
+const unsetResetHash = async (id) => {
   setTimeout(async () => {
     await User.findByIdAndUpdate(
       id,
-      { resetToken: "" },
+      { resetHash: "" },
       {
         new: true,
       }
@@ -87,7 +88,7 @@ module.exports = {
   generateToken,
   resetTokenIsValid,
   getBaseUploadPath,
-  unsetResetToken,
+  unsetResetHash,
   validateFileName,
   uploadFile,
 };
