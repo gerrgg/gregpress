@@ -10,13 +10,17 @@ const generateToken = () => {
   return rand() + rand();
 };
 
-const resetTokenIsValid = async (user, token) =>
-  !(
-    user &&
-    token &&
-    user.resetHash !== "" &&
-    (await bcrypt.compare(token, user.resetHash))
+const tokenIsValid = async (user, token, type = "reset") => {
+  console.log(
+    "isvalid",
+    user.name,
+    token,
+    user[type + "Hash"],
+    await bcrypt.compare(token, user[type + "Hash"])
   );
+
+  user && token && (await bcrypt.compare(token, user[type + "Hash"]));
+};
 
 const getBaseUploadPath = () => {
   const today = new Date();
@@ -86,7 +90,7 @@ const uploadFile = async (file, user) => {
 
 module.exports = {
   generateToken,
-  resetTokenIsValid,
+  tokenIsValid,
   getBaseUploadPath,
   unsetResetHash,
   validateFileName,

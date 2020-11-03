@@ -21,7 +21,6 @@ beforeEach(async () => {
     email: "drbignsexi@gmail.com",
     name: "Greg Bastianelli",
     password: "password",
-    admin: true,
   };
 
   await helper.createUser(user);
@@ -40,7 +39,7 @@ describe("when there is initially some users saved", () => {
 });
 
 describe("when creating users", () => {
-  test("users with valid credentials are return 201 created and new user object", async () => {
+  test("users with valid credentials are return 201 created and new user object and are inactive from default", async () => {
     const user = {
       email: "greg@iamgreg.xyz",
       name: "Greg Bastianelli",
@@ -54,6 +53,7 @@ describe("when creating users", () => {
       .expect("Content-Type", /application\/json/);
 
     expect(response.body.email).toBe(user.email);
+    expect(response.body.active).not.toBe(user.active);
   });
 
   test("users with invalid credentials return 400 and error", async () => {
@@ -140,7 +140,7 @@ describe("when deleting users", () => {
     expect(usersAfterDelete.length).toBe(usersBeforeDelete.length);
   });
 
-  test("users without admin role cannot delete other users", async () => {
+  test("users without cannot delete other users", async () => {
     const users = await helper.getUsers();
 
     const user = users[0];
@@ -155,23 +155,6 @@ describe("when deleting users", () => {
       .delete(`/api/users/${admin.id}`) // delete the admin
       .set("Authorization", `Bearer ${token}`) // with non admin token
       .expect(401); // unathorized
-  });
-
-  test("users with admin role CAN delete other users", async () => {
-    const users = await helper.getUsers();
-
-    const user = users[0];
-    const admin = users[1];
-
-    const response = await helper.login(admin.email, "password");
-
-    // non admin user token
-    const { token } = response.body;
-
-    await api
-      .delete(`/api/users/${user.id}`) // delete the admin
-      .set("Authorization", `Bearer ${token}`) // with non admin token
-      .expect(204); // no further content
   });
 });
 
@@ -234,6 +217,24 @@ describe("when editing users", () => {
       .set("Authorization", `Bearer ${loginResponse.body.token}`) // use an unathorized token
       .expect(401)
       .expect("Content-Type", /application\/json/);
+  });
+
+  test("should return 401 if activation token doesn't match activation Hash", async () => {
+    const user = {
+      email: "someemail@aol.com",
+      name: "somename",
+      password: "password",
+    };
+
+    const response = await helper.createUser(user);
+
+    const createdUser = response.body;
+
+    expect(createdUser.activationHash).not.toBe("");
+
+    await api
+      .get(`/api/users/activate/${createdUser.email}/${helper.generateToken()}`)
+      .expect(401);
   });
 });
 

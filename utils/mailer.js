@@ -26,6 +26,23 @@ const sendPasswordResetEmail = async (email, token) => {
   return info;
 };
 
+const sendActivationEmail = async (email, token) => {
+  const sitename = config.SITENAME;
+  const activationEmailLink = `${sitename}/api/users/activate/${email}/${token}`;
+
+  const info = await mailer.sendMail({
+    to: email,
+    from: config.FROM_EMAIL,
+    subject: `Activate your account | ${sitename}`,
+    html: `<h1>Activate</h1>
+           <p>Hello, thanks for signing up.</p>
+           <p><a href="${activationEmailLink}">Click here to activate your account</a>, if you did not create an account with us please disregard.</p>`,
+  });
+
+  return info;
+};
+
 module.exports = {
   sendPasswordResetEmail,
+  sendActivationEmail,
 };

@@ -8,7 +8,6 @@ A personal blogging platform with main focus sharing information and presenting 
 
 A post will have a category, include some text/image/code and may be divided into chapters.
 
-- Only the admin can create posts
 - Posts can be commented on
 - Posts will have a single category
 - Posts will have one or more chapters

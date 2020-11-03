@@ -27,6 +27,11 @@ const getUploadedFilesPath = () => {
   return `${siteURL}/uploads/${today.getFullYear()}/${today.getMonth()}`;
 };
 
+const generateToken = () => {
+  const rand = () => Math.random().toString(36).substr(2);
+  return rand() + rand();
+};
+
 module.exports = {
   getBlogs,
   getUsers,
@@ -34,4 +39,5 @@ module.exports = {
   createUser,
   login,
   getUploadedFilesPath,
+  generateToken,
 };

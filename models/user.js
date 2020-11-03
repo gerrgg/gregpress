@@ -14,11 +14,12 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: [validateEmail, "Please fill a valid email address"],
   },
+  active: { type: Boolean, default: false },
   passwordHash: { type: String, required: true },
   resetHash: { type: String, default: "" },
+  activationHash: { type: String, default: "" },
   name: { type: String, required: true },
   date: { type: Date, default: Date.now() },
-  admin: { type: Boolean, default: false },
 });
 
 userSchema.set("toJSON", {
